@@ -1,0 +1,104 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: rising-crescent-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/risingcrescent
+    username: rc
+    password: rc_secret
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 10MB
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:89951539489-7nomub0amr0v8sf732qej9jfr39niatj.apps.googleusercontent.com}
+            client-secret: ${GOOGLE_CLIENT_SECRET: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}
+            redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/login/oauth2/code/google}
+            scope:
+              - openid
+              - profile
+              - email
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    listener:
+      auto-startup: ${KAFKA_ENABLED:false}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: rising-crescent
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+app:
+  jwt:
+    secret: RisingCrescentHarvestMoonJwtSigningKeyMustBeLongEnough2026!!
+    expiration-ms: 86400000
+  upload-dir: ${UPLOAD_DIR:./uploads}
+  kafka:
+    enabled: ${KAFKA_ENABLED:false}
+    topics:
+      orders: rc.orders
+      inventory: rc.inventory
+      notifications: rc.notifications
+      audit: rc.audit
+  cors:
+    origins: http://localhost:5173,http://127.0.0.1:5173
+  stripe:
+    secret-key: ${STRIPE_SECRET_KEY:sk_test_51UBxHtGoR2FFeFz7fkULTxvaFeUiSrfyyrqJsCyK9AFN6XoeufIAgaCQLCJcbycmmJChM1IHrT50JbVp0ZdsY1Rb00H28vXBeX}
+    publishable-key: ${STRIPE_PUBLISHABLE_KEY:pk_test_51UBxHtGoR2FFeFz7q9azJJKvGGmh4Fb3Vl9VB7B22SMnvWk2WAwRCuDsiYrQGwUBe50LR43gbvLRvEHUcLpeIYZd00oy4RCIck}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_ocCX9H5GH7AW7fSOSrv4H3pWJCrMWce3}
+    currency: aed
+  noon:
+    enabled: ${NOON_ENABLED:false}
+    base-url: ${NOON_BASE_URL:https://noon-api-gateway.noon.partners/fbpi}
+    api-key: ${NOON_API_KEY:}
+    warehouse-code: ${NOON_WAREHOUSE_CODE:DXB-COLD}
+    merchant-code: ${NOON_MERCHANT_CODE:}
+  delivery:
+    warehouse-lat: 25.1175
+    warehouse-lng: 55.2003
+    tick-ms: 4000
+  twilio:
+    account-sid: ${TWILIO_ACCOUNT_SID:AC6abf5d988b8b4a25199b3b6c0119156c}
+    auth-token: ${TWILIO_AUTH_TOKEN:03aeb016d870e32306975384bb62c0cf}
+    from-number: ${TWILIO_FROM_NUMBER:+17372508034}
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:89951539489-7nomub0amr0v8sf732qej9jfr39niatj.apps.googleusercontent.com}
+    client-secret: ${GOOGLE_CLIENT_SECRET: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}
+    redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/login/oauth2/code/google}
+    login-url: ${GOOGLE_LOGIN_URL:/oauth2/authorization/google}
+    frontend-redirect: ${GOOGLE_FRONTEND_REDIRECT:http://localhost:5173/login}
+  agent:
+    openai-key: ${OPENAI_API_KEY:}
+    openai-model: ${OPENAI_MODEL:gpt-4o-mini}
+    openai-base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+  wapi:
+    enabled: ${WAPI_ENABLED:false}
+    token: ${WAPI_TOKEN:}
+    phone-number-id: ${WAPI_PHONE_NUMBER_ID:}
+    verify-token: ${WAPI_VERIFY_TOKEN:risingcrescent}
+    graph-url: ${WAPI_GRAPH_URL:https://graph.facebook.com/v21.0}
+    default-username: ${WAPI_DEFAULT_USERNAME:admin}
+
+logging:
+  level:
+    com.risingcrescent: INFO

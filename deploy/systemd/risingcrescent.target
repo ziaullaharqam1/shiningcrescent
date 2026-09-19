@@ -1,0 +1,8 @@
+[Unit]
+Description=Rising Crescent stack
+Requires=docker.service
+After=docker.service
+Wants=risingcrescent-postgres.service risingcrescent-kafka.service risingcrescent-api.service risingcrescent-web.service
+
+[Install]
+WantedBy=multi-user.target

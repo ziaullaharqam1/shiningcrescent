@@ -1,0 +1,23 @@
+[Unit]
+Description=Rising Crescent API
+Requires=docker.service risingcrescent-postgres.service risingcrescent-kafka.service
+After=docker.service risingcrescent-postgres.service risingcrescent-kafka.service
+PartOf=risingcrescent.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=8
+TimeoutStartSec=180
+TimeoutStopSec=40
+WorkingDirectory=/home/ec2-user/risingcrescent
+EnvironmentFile=-/home/ec2-user/risingcrescent/.env
+ExecStartPre=/bin/bash -c 'for i in $(seq 1 40); do /usr/bin/docker compose exec -T postgres pg_isready -U rc -d risingcrescent >/dev/null 2>&1 && exit 0; sleep 2; done; exit 1'
+ExecStart=/usr/bin/docker compose up --no-color --no-log-prefix --no-deps api
+ExecStop=/usr/bin/docker compose stop api
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=risingcrescent-api
+
+[Install]
+WantedBy=risingcrescent.target

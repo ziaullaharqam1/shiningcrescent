@@ -1,0 +1,98 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: risingcrescent
+      POSTGRES_USER: rc
+      POSTGRES_PASSWORD: rc_secret
+    volumes:
+      - rc_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rc -d risingcrescent"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  kafka:
+    image: apache/kafka:3.8.0
+    hostname: kafka
+    restart: unless-stopped
+    environment:
+      CLUSTER_ID: 4L6g3nShT-eMCtK--X86sw
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_HEAP_OPTS: -Xms256m -Xmx512m
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 40s
+
+  api:
+    image: eclipse-temurin:21-jre
+    restart: unless-stopped
+    working_dir: /app
+    command:
+      - /bin/sh
+      - -c
+      - |
+        if [ -f /app/uploads/ops/jvm.options ]; then
+          OPTS=$$(tr '\n' ' ' < /app/uploads/ops/jvm.options)
+        else
+          OPTS="$${JAVA_OPTS:--Xms256m -Xmx768m -XX:+UseG1GC -XX:MaxGCPauseMillis=200}"
+        fi
+        exec java $$OPTS -jar app.jar
+    volumes:
+      - ./app.jar:/app/app.jar:ro
+      - ./uploads:/app/uploads
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/risingcrescent
+      SPRING_DATASOURCE_USERNAME: rc
+      SPRING_DATASOURCE_PASSWORD: rc_secret
+      UPLOAD_DIR: /app/uploads
+      KAFKA_ENABLED: "true"
+      KAFKA_BOOTSTRAP: kafka:9092
+      APP_KAFKA_ENABLED: "true"
+      APP_CORS_ORIGINS: https://54.175.201.2.sslip.io,https://54.175.201.2
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-89951539489-7nomub0amr0v8sf732qej9jfr39niatj.apps.googleusercontent.com}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-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}
+      GOOGLE_REDIRECT_URI: https://54.175.201.2.sslip.io/login/oauth2/code/google
+      GOOGLE_LOGIN_URL: https://54.175.201.2.sslip.io/oauth2/authorization/google
+      GOOGLE_FRONTEND_REDIRECT: https://54.175.201.2.sslip.io/login
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  web:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./dist:/usr/share/nginx/html:ro
+      - ./certs:/etc/nginx/certs:ro
+      - ./certbot/www:/var/www/certbot:ro
+    depends_on:
+      - api
+
+volumes:
+  rc_pg_data:

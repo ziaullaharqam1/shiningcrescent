@@ -1,0 +1,22 @@
+[Unit]
+Description=Rising Crescent PostgreSQL
+Requires=docker.service
+After=docker.service
+PartOf=risingcrescent.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+TimeoutStartSec=180
+TimeoutStopSec=30
+WorkingDirectory=/home/ec2-user/risingcrescent
+EnvironmentFile=-/home/ec2-user/risingcrescent/.env
+ExecStart=/usr/bin/docker compose up --no-color --no-log-prefix --no-deps postgres
+ExecStop=/usr/bin/docker compose stop postgres
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=risingcrescent-postgres
+
+[Install]
+WantedBy=risingcrescent.target
