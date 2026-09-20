@@ -157,8 +157,7 @@ public class OrderService {
             return order.getId();
         });
         afterPayment(paidId, actor);
-        SalesOrder order = orders.findById(paidId).orElseThrow();
-        return get(paidId, order.getCustomer().getUsername(), true);
+        return orderSnapshot(paidId, actor);
     }
 
     public Map<String, Object> markPaidByIntent(String paymentIntentId) {
@@ -180,8 +179,15 @@ public class OrderService {
 
     private Map<String, Object> settleExisting(Long orderId, String actor) {
         afterPayment(orderId, actor);
-        SalesOrder order = orders.findById(orderId).orElseThrow();
-        return get(orderId, order.getCustomer().getUsername(), true);
+        return orderSnapshot(orderId, actor);
+    }
+
+    private Map<String, Object> orderSnapshot(Long orderId, String actor) {
+        return inTx(() -> {
+            SalesOrder order = orders.findWithLinesById(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+            return get(order.getId(), order.getCustomer().getUsername(), true);
+        });
     }
 
     private void recordCardPayment(SalesOrder order, String paymentIntentId, String actor) {
@@ -189,7 +195,12 @@ public class OrderService {
             return;
         }
         if (order.getStatus() != OrderStatus.AWAITING_PAYMENT) {
-            throw new IllegalStateException("Order is not awaiting payment");
+            order.setPaymentStatus(PaymentStatus.PAID);
+            if (paymentIntentId != null) {
+                order.setStripePaymentIntentId(paymentIntentId);
+            }
+            orders.save(order);
+            return;
         }
         if (!payments.existsByReference(paymentIntentId)) {
             payments.save(Payment.builder()
@@ -213,7 +224,10 @@ public class OrderService {
     private void afterPayment(Long orderId, String actor) {
         try {
             inNewTx(() -> {
-                SalesOrder order = orders.findById(orderId).orElseThrow();
+                SalesOrder order = orders.findWithLinesById(orderId).orElseThrow();
+                if (order.getStatus() != OrderStatus.PLACED) {
+                    return;
+                }
                 UserAccount customer = order.getCustomer();
                 if (customer.getPreferredChannel() == Channel.WHOLESALE
                         && customer.getCreditLimit().signum() > 0
@@ -240,7 +254,7 @@ public class OrderService {
             }
         }
         try {
-            inNewTx(() -> delivery.dispatch(orders.findById(orderId).orElseThrow()));
+            inNewTx(() -> delivery.dispatch(orders.findWithLinesById(orderId).orElseThrow()));
         } catch (RuntimeException ex) {
             log.warn("Dispatch after payment for order {}: {}", orderId, ex.getMessage());
             try {
@@ -274,7 +288,7 @@ public class OrderService {
 
     @Transactional
     public Map<String, Object> transition(Long id, OrderStatus target, String actor, String comment) {
-        SalesOrder order = orders.findById(id).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        SalesOrder order = orders.findWithLinesById(id).orElseThrow(() -> new IllegalArgumentException("Order not found"));
         Map<String, Object> result = transition(order, target, actor, comment);
         if (target == OrderStatus.SHIPPED) {
             delivery.dispatch(order);
@@ -324,7 +338,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public Map<String, Object> get(Long id, String username, boolean staff) {
-        SalesOrder order = orders.findById(id).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        SalesOrder order = orders.findWithLinesById(id).orElseThrow(() -> new IllegalArgumentException("Order not found"));
         if (!staff && !order.getCustomer().getUsername().equals(username)) {
             throw new IllegalArgumentException("Order not found");
         }
