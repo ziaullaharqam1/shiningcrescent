@@ -88,7 +88,8 @@ public class FinanceService {
         if (email == null || email.isBlank()) {
             return "";
         }
-        if (email.toLowerCase().endsWith("@phone.shiningcrescent.local")) {
+        if (email.toLowerCase().endsWith("@phone.shiningcrescent.local")
+                || email.toLowerCase().endsWith("@phone.risingcrescent.local")) {
             return "";
         }
         return email;
