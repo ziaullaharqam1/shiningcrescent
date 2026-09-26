@@ -21,7 +21,7 @@ import {
 
 function Guard({ children, perm, consoleOnly }) {
   const { user, ready, can } = useAuth();
-  if (!ready) return <div className="p-10">Loading…</div>;
+  if (!ready) return <div className="p-10 text-ink-muted font-sans">Loading…</div>;
   if (!user) return <Navigate to="/login" replace />;
   if (consoleOnly && !user.console && !can("PURCHASE_ORDERS:VIEW") && !can("SALES_ORDERS:VIEW")) return <Navigate to="/" replace />;
   if (perm && !can(perm) && !can("DASHBOARD:VIEW")) return <Navigate to="/" replace />;

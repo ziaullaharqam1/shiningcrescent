@@ -34,7 +34,7 @@ function linesTable(lines, costKey, totalKey) {
 }
 
 function brandBits(brand) {
-  const name = brand?.brandName || "Rising Crescent";
+  const name = brand?.brandName || "Shining Crescent";
   const logo = brand?.logoUrl
     ? `<img src="${esc(absUrl(brand.logoUrl))}" alt="" style="height:48px;width:48px;border-radius:999px;object-cover" />`
     : "";
@@ -78,7 +78,8 @@ export function printPurchaseOrder(po, brand) {
 
 function displayContact(v) {
   const s = String(v ?? "").trim();
-  if (!s || s.toLowerCase().includes("@phone.risingcrescent.local")) return "";
+  if (!s || s.toLowerCase().includes("@phone.shiningcrescent.local")
+      || s.toLowerCase().includes("@phone.risingcrescent.local")) return "";
   return s;
 }
 

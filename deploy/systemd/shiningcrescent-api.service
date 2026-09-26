@@ -1,0 +1,23 @@
+[Unit]
+Description=Shining Crescent API
+Requires=docker.service shiningcrescent-postgres.service shiningcrescent-kafka.service
+After=docker.service shiningcrescent-postgres.service shiningcrescent-kafka.service
+PartOf=shiningcrescent.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=8
+TimeoutStartSec=180
+TimeoutStopSec=40
+WorkingDirectory=/home/ec2-user/shiningcrescent
+EnvironmentFile=-/home/ec2-user/shiningcrescent/.env
+ExecStartPre=/bin/bash -c 'for i in $(seq 1 40); do /usr/bin/docker compose exec -T postgres pg_isready -U rc -d shiningcrescent >/dev/null 2>&1 && exit 0; sleep 2; done; exit 1'
+ExecStart=/usr/bin/docker compose up --no-color --no-log-prefix --no-deps api
+ExecStop=/usr/bin/docker compose stop api
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=shiningcrescent-api
+
+[Install]
+WantedBy=shiningcrescent.target

@@ -3,13 +3,13 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: risingcrescent
+      POSTGRES_DB: shiningcrescent
       POSTGRES_USER: rc
       POSTGRES_PASSWORD: rc_secret
     volumes:
       - rc_pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U rc -d risingcrescent"]
+      test: ["CMD-SHELL", "pg_isready -U rc -d shiningcrescent"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -58,7 +58,7 @@ services:
       - ./app.jar:/app/app.jar:ro
       - ./uploads:/app/uploads
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/risingcrescent
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shiningcrescent
       SPRING_DATASOURCE_USERNAME: rc
       SPRING_DATASOURCE_PASSWORD: rc_secret
       UPLOAD_DIR: /app/uploads
@@ -66,6 +66,8 @@ services:
       KAFKA_BOOTSTRAP: kafka:9092
       APP_KAFKA_ENABLED: "true"
       APP_CORS_ORIGINS: https://54.175.201.2.sslip.io,https://54.175.201.2
+      APP_OIDC_ISSUER: https://54.175.201.2.sslip.io
+      SESSION_COOKIE_SECURE: "true"
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-89951539489-7nomub0amr0v8sf732qej9jfr39niatj.apps.googleusercontent.com}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-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}
       GOOGLE_REDIRECT_URI: https://54.175.201.2.sslip.io/login/oauth2/code/google
@@ -96,3 +98,9 @@ services:
 
 volumes:
   rc_pg_data:
+    name: shiningcrescent_pg_data
+    external: true
+
+networks:
+  default:
+    name: shiningcrescent_default

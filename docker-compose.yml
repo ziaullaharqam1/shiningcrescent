@@ -3,7 +3,7 @@ services:
     image: postgres:16-alpine
     container_name: rc-postgres
     environment:
-      POSTGRES_DB: risingcrescent
+      POSTGRES_DB: shiningcrescent
       POSTGRES_USER: rc
       POSTGRES_PASSWORD: rc_secret
     ports:
@@ -11,7 +11,7 @@ services:
     volumes:
       - rc_pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U rc -d risingcrescent"]
+      test: ["CMD-SHELL", "pg_isready -U rc -d shiningcrescent"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -37,3 +37,4 @@ services:
 
 volumes:
   rc_pg_data:
+    name: shiningcrescent_pg_data

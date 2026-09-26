@@ -34,8 +34,8 @@ function useLoad(fn) {
 function PageHead({ title, hint }) {
   return (
     <div className="mb-5">
-      <h1 className="font-display text-3xl md:text-4xl text-grove-800">{title}</h1>
-      {hint && <p className="text-grove-600 mt-1 text-sm md:text-base">{hint}</p>}
+      <h1 className="page-title">{title}</h1>
+      {hint && <p className="page-hint">{hint}</p>}
     </div>
   );
 }
@@ -61,7 +61,7 @@ function RecordSearch({ value, onChange, count, total }) {
         placeholder="Search these records…"
         onChange={(e) => onChange(e.target.value)}
       />
-      {value ? <p className="text-xs text-grove-600">{count} of {total}</p> : null}
+      {value ? <p className="text-xs text-ink-muted">{count} of {total}</p> : null}
     </div>
   );
 }
@@ -83,26 +83,26 @@ export function Dashboard() {
   const { can } = useAuth();
   const { data } = useLoad(async () => (await api.get("/console/dashboard")).data);
   if (!can("DASHBOARD:VIEW")) return <Navigate to="/console/purchase-orders" replace />;
-  if (!data) return <p className="text-grove-600">Loading desk…</p>;
+  if (!data) return <p className="text-ink-muted">Loading desk…</p>;
   const supplierDesk = Boolean(data.supplierDesk);
   const cards = supplierDesk
     ? [
-        ["Assigned POs", data.assignedPos, "bg-peach"],
-        ["Awaiting your ack", data.awaitingAck, "bg-gold-100"],
-        ["Open with you", data.openPos, "bg-citrus/30"],
-        ["Your available lots", data.availableLots, "bg-grove-100"],
-        ["In quarantine", data.quarantineLots ?? data.pendingQc, "bg-sky"],
-        ["On-hand kg", data.onHandQty, "bg-peach"],
+        ["Assigned POs", data.assignedPos, "bg-harvest-soft"],
+        ["Awaiting your ack", data.awaitingAck, "bg-peach"],
+        ["Open with you", data.openPos, "bg-citrus"],
+        ["Your available lots", data.availableLots, "bg-secondary-container"],
+        ["In quarantine", data.quarantineLots ?? data.pendingQc, "bg-steel-50"],
+        ["On-hand kg", data.onHandQty, "bg-primary-soft"],
       ]
     : [
-        ["Orders placed", data.ordersPlaced, "bg-citrus/30"],
-        ["Picking", data.ordersPicking, "bg-sky"],
-        ["Shipped", data.ordersShipped, "bg-grove-100"],
+        ["Orders placed", data.ordersPlaced, "bg-citrus"],
+        ["Picking", data.ordersPicking, "bg-steel-50"],
+        ["Shipped", data.ordersShipped, "bg-secondary-container"],
         ["Open POs", data.openPos, "bg-peach"],
-        ["Pending QC", data.pendingQc, "bg-gold-100"],
-        ["Available lots", data.availableLots, "bg-grove-100"],
-        ["On-hand kg", data.onHandQty, "bg-peach"],
-        ["SKUs", data.catalogSkus, "bg-sky"],
+        ["Pending QC", data.pendingQc, "bg-harvest-soft"],
+        ["Available lots", data.availableLots, "bg-secondary-container"],
+        ["On-hand kg", data.onHandQty, "bg-primary-soft"],
+        ["SKUs", data.catalogSkus, "bg-steel-50"],
       ];
   return (
     <div>
@@ -115,15 +115,15 @@ export function Dashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {cards.map(([k, v, bg]) => (
           <div key={k} className={`card p-4 md:p-5 ${bg}`}>
-            <p className="text-[11px] md:text-xs uppercase tracking-wide text-grove-600">{k}</p>
-            <p className="font-display text-2xl md:text-3xl mt-2 text-grove-800">{v}</p>
+            <p className="label-overline">{k}</p>
+            <p className="font-display text-2xl md:text-3xl mt-2 text-primary">{v}</p>
           </div>
         ))}
       </div>
       {can("REPORTS:VIEW") && (
-        <Link to="/console/reports" className="card p-4 md:p-5 mt-4 block hover:bg-grove-50">
-          <p className="font-display text-xl text-grove-800">Reports</p>
-          <p className="text-sm text-grove-600 mt-1">Daily and monthly Excel workbooks with a summary sheet and detail grids.</p>
+        <Link to="/console/reports" className="card p-4 md:p-5 mt-4 block hover:bg-surface-low">
+          <p className="font-display text-xl text-primary">Reports</p>
+          <p className="text-sm text-ink-muted mt-1">Daily and monthly Excel workbooks with a summary sheet and detail grids.</p>
         </Link>
       )}
     </div>
@@ -208,11 +208,11 @@ export function Products() {
         title="Product master"
         hint="Merchandisers and admins set retail and wholesale prices here. A new SKU raises an opening PO of 3 kg with any active supplier, auto-passes QA, and lands an available lot."
       />
-      {seedNote && <p className="card p-3 mb-3 text-sm text-grove-800">{seedNote}</p>}
+      {seedNote && <p className="card p-3 mb-3 text-sm text-primary">{seedNote}</p>}
       {error && <ErrorBanner className="mb-3">{error}</ErrorBanner>}
       {showForm && (
         <form onSubmit={save} className="card p-4 mb-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <p className="sm:col-span-2 lg:col-span-4 text-sm font-semibold text-grove-800">
+          <p className="sm:col-span-2 lg:col-span-4 text-sm font-semibold text-primary">
             {editing ? `Edit prices for ${form.sku}` : "New SKU"}
           </p>
           {["sku", "name", "origin", "grade", "retailPrice", "wholesalePrice"].map((k) => (
@@ -232,7 +232,7 @@ export function Products() {
             <option>FRESH_FRUIT</option><option>DRY_FRUIT</option><option>NUT</option><option>MIX</option>
           </select>
           <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center gap-4">
-            <div className="h-20 w-20 rounded-xl overflow-hidden border border-grove-100 bg-white shrink-0">
+            <div className="h-20 w-20 rounded-xl overflow-hidden border border-line bg-white shrink-0">
               {form.imageFile ? (
                 <img src={URL.createObjectURL(form.imageFile)} alt="" className="h-full w-full object-cover" />
               ) : (
@@ -270,7 +270,7 @@ export function Products() {
             {filtered.map((p) => (
               <tr key={p.id}>
                 <td>
-                  <div className="h-12 w-12 rounded-lg overflow-hidden border border-grove-100">
+                  <div className="h-12 w-12 rounded-lg overflow-hidden border border-line">
                     <ProducePhoto hint={p.imageHint} imageUrl={p.imageUrl} name={p.name} sku={p.sku} className="h-full w-full" />
                   </div>
                 </td>
@@ -336,7 +336,7 @@ export function SimpleMaster({ title, path, fields, permCreate, permUpdate }) {
       <RecordSearch value={q} onChange={setQ} count={filtered.length} total={rows.length} />
       {canSave && (
         <form className="card p-4 mb-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-3" onSubmit={save}>
-          <p className="sm:col-span-2 lg:col-span-3 text-sm font-semibold text-grove-800">{editing ? "Edit record" : "New record"}</p>
+          <p className="sm:col-span-2 lg:col-span-3 text-sm font-semibold text-primary">{editing ? "Edit record" : "New record"}</p>
           {fields.map((f) => (
             <input key={f} className="input" placeholder={f} value={form[f] ?? ""} onChange={(e) => setForm({ ...form, [f]: e.target.value })} />
           ))}
@@ -647,7 +647,7 @@ export function Inventory() {
       {error && <ErrorBanner>{error}</ErrorBanner>}
       {canAdd && (
         <form className="card p-4 mb-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3" onSubmit={addLot}>
-          <p className="sm:col-span-2 lg:col-span-4 text-sm font-semibold text-grove-800">Add lot</p>
+          <p className="sm:col-span-2 lg:col-span-4 text-sm font-semibold text-primary">Add lot</p>
           <select className="input" required value={newLot.productId} onChange={(e) => setNewLot({ ...newLot, productId: e.target.value })}>
             <option value="">Product</option>
             {products.map((p) => <option key={p.id} value={p.id}>{p.sku} · {p.name}</option>)}
@@ -804,8 +804,8 @@ export function Reports() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
         {cards.map(([k, v]) => (
           <div key={k} className="card p-3">
-            <p className="text-[11px] uppercase tracking-wide text-grove-600">{k}</p>
-            <p className="font-display text-xl text-grove-800 mt-1">{v}</p>
+            <p className="text-[11px] uppercase tracking-wide text-ink-muted">{k}</p>
+            <p className="font-display text-xl text-primary mt-1">{v}</p>
           </div>
         ))}
       </div>
@@ -822,9 +822,9 @@ export function Reports() {
       {showPeriod && (
         <>
           <section className="mb-8">
-            <h2 className="font-display text-2xl text-grove-800 mb-2">Daily report</h2>
+            <h2 className="font-display text-2xl text-primary mb-2">Daily report</h2>
             <div className="flex flex-wrap gap-2 items-end mb-3">
-              <label className="text-sm text-grove-700">
+              <label className="text-sm text-ink">
                 Day
                 <input className="input mt-1" type="date" value={day} onChange={(e) => setDay(e.target.value)} />
               </label>
@@ -846,7 +846,7 @@ export function Reports() {
                       {asList(daily.orders).map((o) => (
                         <tr key={o.orderNo}><td>{o.orderNo}</td><td>{o.customer}</td><td><StatusPill value={o.status} /></td><td>{money(o.total)}</td></tr>
                       ))}
-                      {asList(daily.orders).length === 0 && <tr><td colSpan={4} className="text-grove-600">No sales this day.</td></tr>}
+                      {asList(daily.orders).length === 0 && <tr><td colSpan={4} className="text-ink-muted">No sales this day.</td></tr>}
                     </tbody>
                   </table>
                 </div>
@@ -857,7 +857,7 @@ export function Reports() {
                       {asList(daily.invoices).map((i) => (
                         <tr key={i.invoiceNo}><td>{i.invoiceNo}</td><td>{i.orderNo}</td><td>{money(i.amount)}</td><td>{money(i.paidAmount)}</td><td><StatusPill value={i.status} /></td></tr>
                       ))}
-                      {asList(daily.invoices).length === 0 && <tr><td colSpan={5} className="text-grove-600">No invoices this day.</td></tr>}
+                      {asList(daily.invoices).length === 0 && <tr><td colSpan={5} className="text-ink-muted">No invoices this day.</td></tr>}
                     </tbody>
                   </table>
                 </div>
@@ -868,7 +868,7 @@ export function Reports() {
                       {asList(daily.purchaseOrders).map((p) => (
                         <tr key={p.poNo}><td>{p.poNo}</td><td>{p.supplier}</td><td><StatusPill value={p.status} /></td><td>{money(p.total)}</td></tr>
                       ))}
-                      {asList(daily.purchaseOrders).length === 0 && <tr><td colSpan={4} className="text-grove-600">No purchase orders this day.</td></tr>}
+                      {asList(daily.purchaseOrders).length === 0 && <tr><td colSpan={4} className="text-ink-muted">No purchase orders this day.</td></tr>}
                     </tbody>
                   </table>
                 </div>
@@ -876,9 +876,9 @@ export function Reports() {
             )}
           </section>
           <section className="mb-8">
-            <h2 className="font-display text-2xl text-grove-800 mb-2">Monthly report</h2>
+            <h2 className="font-display text-2xl text-primary mb-2">Monthly report</h2>
             <div className="flex flex-wrap gap-2 items-end mb-3">
-              <label className="text-sm text-grove-700">
+              <label className="text-sm text-ink">
                 Month
                 <input className="input mt-1" type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
               </label>
@@ -900,7 +900,7 @@ export function Reports() {
                       {asList(monthly.orders).map((o) => (
                         <tr key={o.orderNo}><td>{o.orderNo}</td><td>{o.customer}</td><td><StatusPill value={o.status} /></td><td>{money(o.total)}</td></tr>
                       ))}
-                      {asList(monthly.orders).length === 0 && <tr><td colSpan={4} className="text-grove-600">No sales this month.</td></tr>}
+                      {asList(monthly.orders).length === 0 && <tr><td colSpan={4} className="text-ink-muted">No sales this month.</td></tr>}
                     </tbody>
                   </table>
                 </div>
@@ -911,7 +911,7 @@ export function Reports() {
                       {asList(monthly.invoices).map((i) => (
                         <tr key={i.invoiceNo}><td>{i.invoiceNo}</td><td>{i.orderNo}</td><td>{money(i.amount)}</td><td>{money(i.paidAmount)}</td><td><StatusPill value={i.status} /></td></tr>
                       ))}
-                      {asList(monthly.invoices).length === 0 && <tr><td colSpan={5} className="text-grove-600">No invoices this month.</td></tr>}
+                      {asList(monthly.invoices).length === 0 && <tr><td colSpan={5} className="text-ink-muted">No invoices this month.</td></tr>}
                     </tbody>
                   </table>
                 </div>
@@ -922,7 +922,7 @@ export function Reports() {
                       {asList(monthly.purchaseOrders).map((p) => (
                         <tr key={p.poNo}><td>{p.poNo}</td><td>{p.supplier}</td><td><StatusPill value={p.status} /></td><td>{money(p.total)}</td></tr>
                       ))}
-                      {asList(monthly.purchaseOrders).length === 0 && <tr><td colSpan={4} className="text-grove-600">No purchase orders this month.</td></tr>}
+                      {asList(monthly.purchaseOrders).length === 0 && <tr><td colSpan={4} className="text-ink-muted">No purchase orders this month.</td></tr>}
                     </tbody>
                   </table>
                 </div>
@@ -933,8 +933,8 @@ export function Reports() {
       )}
       {showPo && (
         <section className="mb-8">
-          <h2 className="font-display text-2xl text-grove-800 mb-2">Purchase orders</h2>
-          <p className="text-sm text-grove-600 mb-3">Same documents as Purchase orders. Preview here without changing status.</p>
+          <h2 className="font-display text-2xl text-primary mb-2">Purchase orders</h2>
+          <p className="text-sm text-ink-muted mb-3">Same documents as Purchase orders. Preview here without changing status.</p>
           <div className="table-wrap">
             <table className="data">
               <thead><tr><th>PO</th><th>Supplier</th><th>Status</th><th>Total</th><th></th></tr></thead>
@@ -947,7 +947,7 @@ export function Reports() {
                     </td>
                   </tr>
                 ))}
-                {pos.length === 0 && <tr><td colSpan={5} className="text-grove-600">No purchase orders yet.</td></tr>}
+                {pos.length === 0 && <tr><td colSpan={5} className="text-ink-muted">No purchase orders yet.</td></tr>}
               </tbody>
             </table>
           </div>
@@ -955,8 +955,8 @@ export function Reports() {
       )}
       {showInv && (
         <section>
-          <h2 className="font-display text-2xl text-grove-800 mb-2">Invoices</h2>
-          <p className="text-sm text-grove-600 mb-3">Same documents as Invoices. Preview for the customer or accounts.</p>
+          <h2 className="font-display text-2xl text-primary mb-2">Invoices</h2>
+          <p className="text-sm text-ink-muted mb-3">Same documents as Invoices. Preview for the customer or accounts.</p>
           <div className="table-wrap">
             <table className="data">
               <thead><tr><th>Invoice</th><th>Order</th><th>Customer</th><th>Amount</th><th></th></tr></thead>
@@ -969,7 +969,7 @@ export function Reports() {
                     </td>
                   </tr>
                 ))}
-                {invoices.length === 0 && <tr><td colSpan={5} className="text-grove-600">No invoices yet.</td></tr>}
+                {invoices.length === 0 && <tr><td colSpan={5} className="text-ink-muted">No invoices yet.</td></tr>}
               </tbody>
             </table>
           </div>
@@ -1077,7 +1077,7 @@ export function UsersPage() {
       {error && <ErrorBanner>{error}</ErrorBanner>}
       {canSave && (
         <form className="card p-4 mb-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-3" onSubmit={save}>
-          <p className="sm:col-span-2 lg:col-span-3 text-sm font-semibold text-grove-800">{editing ? `Edit ${form.username}` : "New user"}</p>
+          <p className="sm:col-span-2 lg:col-span-3 text-sm font-semibold text-primary">{editing ? `Edit ${form.username}` : "New user"}</p>
           <input className="input" placeholder="Username" disabled={editing} value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
           <input className="input" placeholder="Full name" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
           <input className="input" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
@@ -1140,14 +1140,14 @@ export function RolesPage() {
       <div className="grid lg:grid-cols-[220px_1fr] gap-4">
         <div className="flex lg:flex-col gap-1 overflow-x-auto">
           {roles.map((r) => (
-            <button key={r.id} className={`text-left px-3 py-2 rounded-xl whitespace-nowrap ${active?.id === r.id ? "bg-grove-600 text-white" : "bg-white border border-grove-100"}`} onClick={() => setActive(r)}>
+            <button key={r.id} className={`text-left px-3 py-2 rounded-lg whitespace-nowrap ${active?.id === r.id ? "bg-primary text-white shadow-soft" : "bg-white border border-line hover:bg-surface-low"}`} onClick={() => setActive(r)}>
               {r.name}
             </button>
           ))}
         </div>
         {active && (
           <div className="card p-4 overflow-x-auto">
-            <p className="text-sm text-grove-600 mb-3">{active.description}</p>
+            <p className="text-sm text-ink-muted mb-3">{active.description}</p>
             <table className="data">
               <thead><tr><th>Screen</th>{actions.map((a) => <th key={a}>{a}</th>)}</tr></thead>
               <tbody>

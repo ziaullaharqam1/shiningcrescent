@@ -11,10 +11,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.risingcrescent</groupId>
+    <groupId>com.shiningcrescent</groupId>
     <artifactId>trading-api</artifactId>
     <version>1.0.0</version>
-    <name>Rising Crescent Trading API</name>
+    <name>Shining Crescent Trading API</name>
     <description>Fruit and dry fruit trading platform</description>
 
     <properties>

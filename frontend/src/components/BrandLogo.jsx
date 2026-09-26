@@ -1,31 +1,32 @@
 import { Link } from "react-router-dom";
-import { Leaf } from "lucide-react";
 import { useBranding } from "../context/BrandingContext";
 
 const SIZES = {
-  sm: { wrap: "h-8 w-8", icon: 16, text: "text-lg" },
-  md: { wrap: "h-9 w-9", icon: 18, text: "text-xl" },
-  lg: { wrap: "h-11 w-11", icon: 22, text: "text-3xl" },
+  sm: { mark: "h-7 w-7", text: "text-base" },
+  md: { mark: "h-8 w-8", text: "text-lg" },
+  lg: { mark: "h-10 w-10", text: "text-2xl" },
 };
+
+const DEFAULT_MARK = "/brand-mark.svg";
 
 export default function BrandLogo({ to = "/", size = "md", className = "" }) {
   const { branding } = useBranding();
   const s = SIZES[size] || SIZES.md;
-  const name = branding?.brandName || "Rising Crescent";
-  const mark = branding?.logoUrl ? (
-    <img src={branding.logoUrl} alt="" className={`${s.wrap} rounded-full object-cover border border-grove-100 shrink-0`} />
-  ) : (
-    <span className={`${s.wrap} rounded-full bg-grove-100 grid place-items-center shrink-0`}>
-      <Leaf className="text-grove-700" size={s.icon} />
-    </span>
-  );
+  const name = branding?.brandName || "Shining Crescent";
+  const markSrc = branding?.logoUrl || DEFAULT_MARK;
   const inner = (
     <>
-      {mark}
-      <span className={`font-display ${s.text} text-grove-800 leading-none`}>{name}</span>
+      <img
+        src={markSrc}
+        alt=""
+        className={`${s.mark} rounded-full object-contain shrink-0`}
+      />
+      <span className={`font-display ${s.text} text-primary leading-none tracking-tight font-semibold`}>
+        {name}
+      </span>
     </>
   );
-  const cls = `inline-flex items-center gap-2 shrink-0 ${className}`.trim();
+  const cls = `inline-flex items-center gap-3 shrink-0 ${className}`.trim();
   if (to) {
     return (
       <Link to={to} className={cls}>

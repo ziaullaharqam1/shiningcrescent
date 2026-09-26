@@ -8,11 +8,11 @@ import { useAuth } from "../../context/AuthContext";
 function tone(severity) {
   if (severity === "critical") return "border-red-200 bg-red-50 text-red-900";
   if (severity === "warn") return "border-amber-200 bg-amber-50 text-amber-950";
-  return "border-grove-100 bg-grove-50 text-grove-800";
+  return "border-line bg-surface-low text-primary";
 }
 
 function pill(ok) {
-  return ok ? "bg-grove-100 text-grove-800" : "bg-red-100 text-red-800";
+  return ok ? "bg-secondary-container text-primary" : "bg-red-100 text-red-800";
 }
 
 function actionLabel(id) {
@@ -153,13 +153,13 @@ export default function Ops() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl md:text-4xl text-grove-800">Ops</h1>
-          <p className="text-grove-600 mt-1 text-sm">Super admin only. Backend health, Stripe, JVM, network, logs, and restarts.</p>
+          <h1 className="page-title">Ops</h1>
+          <p className="page-hint">Super admin only. Backend health, Stripe, JVM, network, logs, and restarts.</p>
         </div>
         <button className="btn-ghost" onClick={load} disabled={!!busy}>Refresh</button>
       </div>
       <ErrorBanner>{error}</ErrorBanner>
-      {ok && <p className="text-sm text-grove-800 bg-grove-50 border border-grove-100 rounded-xl px-3 py-2">{ok}</p>}
+      {ok && <p className="text-sm text-primary bg-surface-low border border-line rounded-xl px-3 py-2">{ok}</p>}
 
       <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-3">
         <Stat title="API CPU" value={`${jvm.processCpuPct ?? "—"}%`} hint={`${jvm.threads ?? "—"} threads`} warn={jvm.processCpuPct >= 60} />
@@ -169,7 +169,7 @@ export default function Ops() {
       </div>
 
       <section className="card p-5 space-y-3">
-        <h2 className="font-display text-2xl text-grove-800">Findings and actions</h2>
+        <h2 className="font-display text-2xl text-primary">Findings and actions</h2>
         <div className="space-y-2">
           {findings.map((f, i) => (
             <div key={`${f.area}-${i}`} className={`rounded-xl border px-3 py-3 ${tone(f.severity)}`}>
@@ -197,10 +197,10 @@ export default function Ops() {
 
       <div className="grid lg:grid-cols-2 gap-4">
         <section className="card p-5 space-y-3">
-          <h2 className="font-display text-2xl text-grove-800">Backend</h2>
+          <h2 className="font-display text-2xl text-primary">Backend</h2>
           <Row label="Database" ok={db.ok} detail={`${db.detail || ""} · ${db.latencyMs ?? "—"} ms · pool ${db.active ?? "—"}/${db.maxPool ?? "—"}`} />
           <Row label="Kafka" ok={kafka.ok !== false} detail={kafka.detail || (kafka.enabled ? kafka.bootstrap : "Disabled")} />
-          <p className="text-xs text-grove-600">{data?.restartHint}</p>
+          <p className="text-xs text-ink-muted">{data?.restartHint}</p>
           <div className="flex flex-wrap gap-2">
             <button className="btn-primary" disabled={!!busy} onClick={() => act("restart-api")}>
               {busy === "restart-api" ? "Restarting…" : "Restart API"}
@@ -211,12 +211,12 @@ export default function Ops() {
         </section>
 
         <section className="card p-5 space-y-3">
-          <h2 className="font-display text-2xl text-grove-800">Stripe payments</h2>
+          <h2 className="font-display text-2xl text-primary">Stripe payments</h2>
           <Row label="Mode" ok={!stripe.mock && stripe.reachable} detail={stripe.mock ? "Mock checkout" : stripe.status || "unknown"} />
           <Row label="API" ok={stripe.reachable || stripe.mock} detail={stripe.detail} />
           <Row label="Webhook secret" ok={stripe.webhookConfigured} detail={stripe.lastWebhook ? `${stripe.lastWebhook.type} @ ${stripe.lastWebhook.at}` : "No webhook seen this process"} />
           {Array.isArray(stripe.recentIntents) && stripe.recentIntents.length > 0 && (
-            <ul className="text-xs text-grove-700 space-y-1">
+            <ul className="text-xs text-ink space-y-1">
               {stripe.recentIntents.map((pi) => (
                 <li key={pi.id} className="font-mono">{pi.id} · {pi.status} · {pi.amount} {pi.currency}</li>
               ))}
@@ -230,8 +230,8 @@ export default function Ops() {
 
       <div className="grid lg:grid-cols-2 gap-4">
         <section className="card p-5 space-y-3">
-          <h2 className="font-display text-2xl text-grove-800">GC tuning</h2>
-          <p className="text-sm text-grove-600">Saving a profile writes JVM flags. Restart the API (Docker/systemd) to apply them.</p>
+          <h2 className="font-display text-2xl text-primary">GC tuning</h2>
+          <p className="text-sm text-ink-muted">Saving a profile writes JVM flags. Restart the API (Docker/systemd) to apply them.</p>
           {data?.pendingJvmOptions ? <p className="text-xs font-mono bg-gray-50 rounded-lg px-2 py-2">Pending: {data.pendingJvmOptions}</p> : null}
           <select className="input" value={gcProfile} onChange={(e) => setGcProfile(e.target.value)}>
             {Object.entries(data?.gcProfiles || {}).map(([k, v]) => (
@@ -244,7 +244,7 @@ export default function Ops() {
         </section>
 
         <section className="card p-5 space-y-3">
-          <h2 className="font-display text-2xl text-grove-800">Profiling & network</h2>
+          <h2 className="font-display text-2xl text-primary">Profiling & network</h2>
           <Row label="JFR" ok={!data?.profiling?.running || true} detail={data?.profiling?.running ? `Running ${data.profiling.name}` : "Idle"} />
           <Row label="Postgres TCP" ok={network.postgres?.ok} detail={fmtNet(network.postgres)} />
           <Row label="Kafka TCP" ok={network.kafka?.skipped || network.kafka?.ok} detail={network.kafka?.skipped ? "Skipped" : fmtNet(network.kafka)} />
@@ -305,9 +305,9 @@ export default function Ops() {
 function Stat({ title, value, hint, warn }) {
   return (
     <div className={`card p-4 ${warn ? "border-amber-200" : ""}`}>
-      <p className="text-xs uppercase tracking-wide text-grove-600">{title}</p>
-      <p className="font-display text-2xl text-grove-800 mt-1">{value}</p>
-      <p className="text-xs text-grove-600 mt-1">{hint}</p>
+      <p className="text-xs uppercase tracking-wide text-ink-muted">{title}</p>
+      <p className="font-display text-2xl text-primary mt-1">{value}</p>
+      <p className="text-xs text-ink-muted mt-1">{hint}</p>
     </div>
   );
 }
@@ -317,8 +317,8 @@ function Row({ label, ok, detail }) {
     <div className="flex gap-3 items-start">
       <span className={`text-xs font-semibold rounded-full px-2 py-1 ${pill(ok)}`}>{ok ? "OK" : "ISSUE"}</span>
       <div>
-        <p className="text-sm font-semibold text-grove-800">{label}</p>
-        <p className="text-xs text-grove-600">{detail}</p>
+        <p className="text-sm font-semibold text-primary">{label}</p>
+        <p className="text-xs text-ink-muted">{detail}</p>
       </div>
     </div>
   );

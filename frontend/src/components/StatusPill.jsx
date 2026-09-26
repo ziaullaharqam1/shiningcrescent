@@ -1,11 +1,12 @@
 export default function StatusPill({ value }) {
   const v = String(value || "").toLowerCase();
-  let cls = "bg-sky text-grove-800";
-  if (/(pending|hold|credit|draft|quarantine|arriv)/.test(v) && !/arrived/.test(v)) cls = "bg-[#D6E6F0] text-[#1E3A4C]";
-  if (/(publish|available|paid|deliver|pass|confirm|ship|approv|arrived)/.test(v)) cls = "bg-grove-100 text-grove-800";
-  if (/(reject|cancel|expired)/.test(v)) cls = "bg-red-100 text-red-700";
+  let cls = "pill-muted";
+  if (/(pending|hold|credit|draft|quarantine|arriv)/.test(v) && !/arrived/.test(v)) cls = "bg-steel-100 text-steel-900";
+  if (/(publish|available|paid|deliver|pass|confirm|ship|approv|arrived)/.test(v)) cls = "pill-ok";
+  if (/(fefo|expir|near)/.test(v)) cls = "pill-warn";
+  if (/(reject|cancel|expired|fail)/.test(v)) cls = "pill-danger";
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${cls}`}>
+    <span className={`pill ${cls}`}>
       {String(value || "").replaceAll("_", " ")}
     </span>
   );

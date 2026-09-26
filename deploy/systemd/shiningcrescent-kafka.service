@@ -1,0 +1,22 @@
+[Unit]
+Description=Shining Crescent Kafka
+Requires=docker.service shiningcrescent-postgres.service
+After=docker.service shiningcrescent-postgres.service
+PartOf=shiningcrescent.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=8
+TimeoutStartSec=300
+TimeoutStopSec=30
+WorkingDirectory=/home/ec2-user/shiningcrescent
+EnvironmentFile=-/home/ec2-user/shiningcrescent/.env
+ExecStart=/usr/bin/docker compose up --no-color --no-log-prefix --no-deps kafka
+ExecStop=/usr/bin/docker compose stop kafka
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=shiningcrescent-kafka
+
+[Install]
+WantedBy=shiningcrescent.target

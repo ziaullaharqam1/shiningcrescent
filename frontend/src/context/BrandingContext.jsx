@@ -2,12 +2,13 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import api from "../api/client";
 
 export const DEFAULT_BRAND = {
-  brandName: "Rising Crescent",
-  logoUrl: "",
-  primaryColor: "#16a34a",
-  hoverColor: "#15803d",
-  softColor: "#dcfce7",
-  inkColor: "#14532d",
+  brandName: "Shining Crescent",
+  logoUrl: "/brand-mark.svg",
+  primaryColor: "#0f5132",
+  hoverColor: "#0e3922",
+  softColor: "#ecfdf5",
+  inkColor: "#0e3922",
+  hubLine: "Dubai Central Hub: Al Aweer Produce Exchange · Abu Dhabi Mina Zayed",
 };
 
 function hexToRgb(hex) {
@@ -53,6 +54,7 @@ export function BrandingProvider({ children }) {
         hoverColor: data.hoverColor || DEFAULT_BRAND.hoverColor,
         softColor: data.softColor || DEFAULT_BRAND.softColor,
         inkColor: data.inkColor || DEFAULT_BRAND.inkColor,
+        hubLine: data.hubLine || DEFAULT_BRAND.hubLine,
       };
       setBranding(next);
       applyBrandTheme(next);

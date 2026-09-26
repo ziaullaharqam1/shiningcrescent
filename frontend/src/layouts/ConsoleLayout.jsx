@@ -32,16 +32,16 @@ export default function ConsoleLayout() {
   const { user, can } = useAuth();
   const superAdmin = user?.roles?.includes("SUPER_ADMIN");
   return (
-    <div className="min-h-screen bg-white lg:grid lg:grid-cols-[248px_1fr]">
-      <aside className="bg-white border-b lg:border-b-0 lg:border-r border-gray-100 p-4 lg:min-h-screen">
+    <div className="min-h-screen bg-surface lg:grid lg:grid-cols-[248px_1fr]">
+      <aside className="bg-white border-b lg:border-b-0 lg:border-r border-line p-4 lg:min-h-screen lg:sticky lg:top-0 lg:self-start">
         <BrandLogo to="/" size="sm" />
-        <p className="text-xs text-grove-600 mt-1 mb-2">
-          {user?.fullName}
-          <span className="block text-grove-500">{user?.roles?.join(" · ")}</span>
+        <p className="text-xs text-ink-muted mt-2 mb-2 font-sans">
+          <span className="font-semibold text-ink">{user?.fullName}</span>
+          <span className="block text-ink-faint">{user?.roles?.join(" · ")}</span>
         </p>
         {user && (
           <div className="mb-3 sticky top-0 z-20 bg-white py-1">
-            <SignOutButton className="btn-ghost text-sm w-full" />
+            <SignOutButton className="btn-ghost btn-sm w-full" />
           </div>
         )}
         <nav className="flex lg:flex-col gap-1 overflow-x-auto pb-1 -mx-1 px-1">
@@ -57,18 +57,20 @@ export default function ConsoleLayout() {
                 to={l.to}
                 end={l.end}
                 className={({ isActive }) =>
-                  `flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm whitespace-nowrap min-h-11 ${
-                    isActive ? "bg-grove-100 text-grove-800 font-semibold" : "text-grove-700 hover:bg-grove-50"
+                  `flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm whitespace-nowrap min-h-11 font-medium transition-colors ${
+                    isActive
+                      ? "bg-secondary-container text-primary font-semibold"
+                      : "text-ink-muted hover:bg-surface-low hover:text-primary"
                   }`
                 }
               >
-                <Icon size={16} className="text-grove-600 shrink-0" /> {l.label}
+                <Icon size={16} className="shrink-0 opacity-80" /> {l.label}
               </NavLink>
             );
           })}
         </nav>
       </aside>
-      <div className="p-4 md:p-8 overflow-x-hidden max-w-6xl">
+      <div className="p-4 md:p-8 overflow-x-hidden max-w-6xl w-full">
         <Outlet />
       </div>
     </div>

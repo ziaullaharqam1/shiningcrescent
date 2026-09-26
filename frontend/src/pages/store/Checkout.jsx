@@ -72,7 +72,7 @@ export default function Checkout() {
   if (pay?.awaitingCard && pay?.stripeMock) {
     return (
       <PayShell error={error} total={pay.total} orderNo={pay.orderNo}>
-        <p className="text-sm text-grove-600">
+        <p className="text-sm text-ink-muted">
           Test charge. Card number <span className="font-mono tracking-wide">4242424242424242</span>, any future expiry, any CVC.
         </p>
         <button
@@ -111,28 +111,28 @@ export default function Checkout() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
-      <h1 className="font-display text-4xl">Deliver the harvest</h1>
-      <p className="text-sm text-grove-600 mt-2">Address first, then pay by card or cash on delivery. A Noon rider is assigned from who is free nearby.</p>
+      <h1 className="page-title">Deliver the harvest</h1>
+      <p className="page-hint">Address first, then pay by card or cash on delivery. A Noon rider is assigned from who is free nearby.</p>
       {error && <ErrorBanner>{error}</ErrorBanner>}
       <form onSubmit={startPay} className="card p-6 mt-6 space-y-3">
         <input className="input" placeholder="Receiver name" value={form.shipToName} onChange={(e) => setForm({ ...form, shipToName: e.target.value })} required />
         <input className="input" placeholder="Mobile" value={form.shipToPhone} onChange={(e) => setForm({ ...form, shipToPhone: e.target.value })} required />
         <textarea className="input min-h-24" placeholder="Address (try Downtown Dubai, Marina, Deira…)" value={form.shipToAddress} onChange={(e) => setForm({ ...form, shipToAddress: e.target.value })} required />
         <textarea className="input" placeholder="Notes (ripeness, packing)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
-        <label className="flex items-start gap-3 text-sm text-grove-800 cursor-pointer">
+        <label className="flex items-start gap-3 text-sm text-ink cursor-pointer">
           <input
             type="checkbox"
-            className="mt-1"
+            className="mt-1 accent-primary"
             checked={form.leaveAtDoor}
             onChange={(e) => setForm({ ...form, leaveAtDoor: e.target.checked })}
           />
           <span>
             <span className="font-semibold">Leave at the door, do not knock</span>
-            <span className="block text-grove-600">Rider drops the crate and leaves without ringing.</span>
+            <span className="block text-ink-muted">Rider drops the crate and leaves without ringing.</span>
           </span>
         </label>
         <fieldset className="space-y-2 pt-1">
-          <legend className="text-sm font-semibold text-grove-800">Payment</legend>
+          <legend className="text-sm font-semibold text-ink">Payment</legend>
           <label className="flex items-center gap-2 text-sm cursor-pointer">
             <input type="radio" name="pay" value="CARD" checked={form.paymentMethod === "CARD"} onChange={() => setForm({ ...form, paymentMethod: "CARD" })} />
             Pay
@@ -151,8 +151,8 @@ export default function Checkout() {
 function PayShell({ children, error, total, orderNo }) {
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
-      <h1 className="font-display text-4xl">Pay</h1>
-      <p className="text-sm text-grove-600 mt-2">{orderNo} · {money(total)} · AED</p>
+      <h1 className="page-title">Pay</h1>
+      <p className="page-hint">{orderNo} · {money(total)} · AED</p>
       {error && <ErrorBanner>{error}</ErrorBanner>}
       <div className="card p-6 mt-6 space-y-4">{children}</div>
     </div>
@@ -213,7 +213,7 @@ function StripePayForm({ publishableKey, clientSecret, orderId, total, onError }
   return (
     <form onSubmit={pay} className="space-y-4">
       <div ref={mount} />
-      <p className="text-xs text-grove-600">
+      <p className="text-xs text-ink-muted">
         Test card (numbers only): <span className="font-mono">4242424242424242</span> · any future date · any CVC
       </p>
       <button className="btn-primary w-full" disabled={busy || !ready}>{busy ? "Charging…" : `Pay ${money(total)}`}</button>

@@ -1,11 +1,18 @@
 server:
   port: 8080
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: ${SESSION_COOKIE_SECURE:false}
+        same-site: lax
 
 spring:
   application:
-    name: rising-crescent-api
+    name: shining-crescent-api
   datasource:
-    url: jdbc:postgresql://localhost:5432/risingcrescent
+    url: jdbc:postgresql://localhost:5432/shiningcrescent
     username: rc
     password: rc_secret
   jpa:
@@ -43,15 +50,20 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     consumer:
-      group-id: rising-crescent
+      group-id: shining-crescent
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 app:
   jwt:
-    secret: RisingCrescentHarvestMoonJwtSigningKeyMustBeLongEnough2026!!
+    secret: ShiningCrescentHarvestMoonJwtSigningKeyMustBeLongEnough2026!!
     expiration-ms: 86400000
+  oidc:
+    issuer: ${APP_OIDC_ISSUER:}
+  oauth2:
+    client-id: ${APP_OAUTH2_CLIENT_ID:shining-crescent-spa}
+    redirect-uris: ${APP_OAUTH2_REDIRECT_URIS:https://54.175.201.2.sslip.io/,https://54.175.201.2.sslip.io,http://localhost:5173/,http://localhost:5173,http://127.0.0.1:5173/,http://127.0.0.1:5173}
   upload-dir: ${UPLOAD_DIR:./uploads}
   kafka:
     enabled: ${KAFKA_ENABLED:false}
@@ -95,10 +107,10 @@ app:
     enabled: ${WAPI_ENABLED:false}
     token: ${WAPI_TOKEN:}
     phone-number-id: ${WAPI_PHONE_NUMBER_ID:}
-    verify-token: ${WAPI_VERIFY_TOKEN:risingcrescent}
+    verify-token: ${WAPI_VERIFY_TOKEN:shiningcrescent}
     graph-url: ${WAPI_GRAPH_URL:https://graph.facebook.com/v21.0}
     default-username: ${WAPI_DEFAULT_USERNAME:admin}
 
 logging:
   level:
-    com.risingcrescent: INFO
+    com.shiningcrescent: INFO

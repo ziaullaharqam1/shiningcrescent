@@ -1,0 +1,8 @@
+[Unit]
+Description=Shining Crescent stack
+Requires=docker.service
+After=docker.service
+Wants=shiningcrescent-postgres.service shiningcrescent-kafka.service shiningcrescent-api.service shiningcrescent-web.service
+
+[Install]
+WantedBy=multi-user.target

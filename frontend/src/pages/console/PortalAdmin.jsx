@@ -40,6 +40,7 @@ export default function PortalAdmin() {
         hoverColor: d.hoverColor || DEFAULT_BRAND.hoverColor,
         softColor: d.softColor || DEFAULT_BRAND.softColor,
         inkColor: d.inkColor || DEFAULT_BRAND.inkColor,
+        hubLine: d.hubLine || DEFAULT_BRAND.hubLine,
       });
       setSmtp((s) => ({
         ...s,
@@ -153,16 +154,25 @@ export default function PortalAdmin() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-3xl md:text-4xl text-grove-800">Portal admin</h1>
-        <p className="text-grove-600 mt-1 text-sm">Super admin only. Theme, logo, product photos, and SMTP.</p>
+        <h1 className="page-title">Portal admin</h1>
+        <p className="page-hint">Super admin only. Theme, logo, product photos, and SMTP.</p>
       </div>
       <ErrorBanner>{error}</ErrorBanner>
-      {ok && <p className="text-sm text-grove-800 bg-grove-50 border border-grove-100 rounded-xl px-3 py-2">{ok}</p>}
+      {ok && <p className="text-sm text-primary bg-surface-low border border-line rounded-xl px-3 py-2">{ok}</p>}
 
       <form onSubmit={saveBrand} className="card p-5 space-y-4">
-        <h2 className="font-display text-2xl text-grove-800">Brand and colors</h2>
-        <label className="block text-sm font-semibold text-grove-700">Brand name</label>
+        <h2 className="font-display text-2xl text-primary">Brand and colors</h2>
+        <label className="block text-sm font-semibold text-ink">Brand name</label>
         <input className="input" value={brand.brandName} onChange={(e) => setBrand({ ...brand, brandName: e.target.value })} />
+        <label className="block text-sm font-semibold text-ink">Storefront hub line</label>
+        <input
+          className="input"
+          value={brand.hubLine}
+          onChange={(e) => setBrand({ ...brand, hubLine: e.target.value })}
+          placeholder={DEFAULT_BRAND.hubLine}
+          maxLength={500}
+        />
+        <p className="text-xs text-ink-muted -mt-2">Shown in the market floor and sign-in footers.</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {[
             ["primaryColor", "Accent"],
@@ -170,10 +180,10 @@ export default function PortalAdmin() {
             ["softColor", "Soft fill"],
             ["inkColor", "Text"],
           ].map(([k, label]) => (
-            <label key={k} className="text-sm font-semibold text-grove-700">
+            <label key={k} className="text-sm font-semibold text-ink">
               {label}
               <input
-                className="mt-1 h-11 w-full rounded-xl border border-grove-100 bg-white"
+                className="mt-1 h-11 w-full rounded-xl border border-line bg-white"
                 type="color"
                 value={brand[k]}
                 onChange={(e) => setBrand({ ...brand, [k]: e.target.value })}
@@ -185,12 +195,12 @@ export default function PortalAdmin() {
       </form>
 
       <section className="card p-5 space-y-3">
-        <h2 className="font-display text-2xl text-grove-800">Logo</h2>
+        <h2 className="font-display text-2xl text-primary">Logo</h2>
         <div className="flex items-center gap-4">
           {brand.logoUrl ? (
-            <img src={brand.logoUrl} alt="Logo" className="h-16 w-16 rounded-full object-cover border border-grove-100" />
+            <img src={brand.logoUrl} alt="Logo" className="h-16 w-16 rounded-full object-cover border border-line" />
           ) : (
-            <p className="text-sm text-grove-600">Using the default leaf mark.</p>
+            <p className="text-sm text-ink-muted">Using the default leaf mark.</p>
           )}
           <label className="btn-ghost cursor-pointer">
             {busy === "logo" ? "Uploading…" : "Upload logo"}
@@ -200,17 +210,17 @@ export default function PortalAdmin() {
       </section>
 
       <section className="card p-5 space-y-4">
-        <h2 className="font-display text-2xl text-grove-800">Product photos</h2>
-        <p className="text-sm text-grove-600">Replace the photo shown on the market, cart, and product page.</p>
+        <h2 className="font-display text-2xl text-primary">Product photos</h2>
+        <p className="text-sm text-ink-muted">Replace the photo shown on the market, cart, and product page.</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map((p) => (
-            <div key={p.id} className="border border-grove-100 rounded-2xl overflow-hidden">
+            <div key={p.id} className="border border-line rounded-2xl overflow-hidden">
               <div className="h-32 bg-white">
                 <ProducePhoto hint={p.imageHint} imageUrl={p.imageUrl} name={p.name} sku={p.sku} className="h-full w-full" />
               </div>
               <div className="p-3 space-y-2">
-                <p className="font-semibold text-sm text-grove-800">{p.name}</p>
-                <p className="text-xs text-grove-600">{p.sku}</p>
+                <p className="font-semibold text-sm text-primary">{p.name}</p>
+                <p className="text-xs text-ink-muted">{p.sku}</p>
                 <label className="btn-ghost text-xs w-full cursor-pointer">
                   {busy === `p-${p.id}` ? "Uploading…" : "Change photo"}
                   <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(e) => uploadProduct(p.id, e.target.files?.[0])} />
@@ -222,8 +232,8 @@ export default function PortalAdmin() {
       </section>
 
       <form onSubmit={saveSmtp} className="card p-5 space-y-3">
-        <h2 className="font-display text-2xl text-grove-800">SMTP</h2>
-        <p className="text-sm text-grove-600">Used for test mail from this page. Leave password blank to keep the saved one.</p>
+        <h2 className="font-display text-2xl text-primary">SMTP</h2>
+        <p className="text-sm text-ink-muted">Used for test mail from this page. Leave password blank to keep the saved one.</p>
         <input className="input" placeholder="Host (smtp.example.com)" value={smtp.smtpHost} onChange={(e) => setSmtp({ ...smtp, smtpHost: e.target.value })} />
         <input className="input" placeholder="Port" value={smtp.smtpPort} onChange={(e) => setSmtp({ ...smtp, smtpPort: e.target.value })} />
         <input className="input" placeholder="Username" value={smtp.smtpUsername} onChange={(e) => setSmtp({ ...smtp, smtpUsername: e.target.value })} />
@@ -235,7 +245,7 @@ export default function PortalAdmin() {
       </form>
 
       <form onSubmit={testSmtp} className="card p-5 space-y-3">
-        <h2 className="font-display text-2xl text-grove-800">Send a test email</h2>
+        <h2 className="font-display text-2xl text-primary">Send a test email</h2>
         <input className="input" type="email" placeholder="To" value={smtp.testTo} onChange={(e) => setSmtp({ ...smtp, testTo: e.target.value })} required />
         <button className="btn-primary" disabled={busy === "test"}>{busy === "test" ? "Sending…" : "Send test"}</button>
       </form>

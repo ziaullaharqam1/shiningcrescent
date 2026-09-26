@@ -15,6 +15,35 @@ function pickRecorderMime() {
   return types.find((t) => MediaRecorder.isTypeSupported(t)) || "";
 }
 
+const PROMPT_FORMATS = `Use these prompt formats:
+
+Add to cart
+• add 2 kg of dates to cart
+• add to cart sku FD-1 qty 2
+• put 3 Medjool dates in the basket
+
+Create / place a sales order (cash on delivery)
+• create order 2 kg dates
+• place order for sku FD-1 qty 2
+• create order 2 kg dates address Dubai Marina
+• checkout   (uses items already in your cart)
+
+Purchase order (procurement, not a customer order)
+• create PO 3 kg dates supplier Anatolia
+• create purchase order sku FD-1 qty 5
+
+Catalog
+• search dates
+• create product name Fard Dates sku FD-1 retail 28
+• edit product FD-1 retail 30
+• delete product FD-1
+
+Other
+• approve PO-123
+• quarantine PO-123
+• daily report
+• monthly report`;
+
 export default function AgentChat() {
   const { user, can } = useAuth();
   const [open, setOpen] = useState(false);
@@ -25,7 +54,7 @@ export default function AgentChat() {
   const [hint, setHint] = useState("");
   const [voiceOn, setVoiceOn] = useState(() => localStorage.getItem("rc_agent_speak") === "1");
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "I can create, edit, search or delete products, handle purchase orders, approve or quarantine, generate reports, and add to cart. Tap the mic to speak. The agent stays silent unless you turn the speaker on." },
+    { role: "assistant", content: "Ask using a format from the list above. Tap the mic to speak. The agent stays silent unless you turn the speaker on." },
   ]);
   const recRef = useRef(null);
   const streamRef = useRef(null);
@@ -286,20 +315,20 @@ export default function AgentChat() {
     <>
       <button
         type="button"
-        className="fixed bottom-5 right-5 z-40 h-14 w-14 rounded-full bg-grove-600 text-white shadow-lg grid place-items-center hover:bg-grove-700"
+        className="fixed bottom-5 right-5 z-40 h-14 w-14 rounded-full bg-primary text-white shadow-float grid place-items-center hover:bg-primary-container"
         aria-label="Open agent chat"
         onClick={() => setOpen(true)}
       >
         <Bot size={22} />
       </button>
       {open && (
-        <div className="fixed bottom-5 right-5 z-50 w-[min(100%-1.5rem,380px)] h-[min(72vh,540px)] card flex flex-col overflow-hidden shadow-xl">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-grove-100 bg-grove-50">
-            <p className="font-semibold text-grove-800 text-sm">Trading agent</p>
+        <div className="fixed bottom-5 right-5 z-50 w-[min(100%-1.5rem,380px)] h-[min(72vh,540px)] card flex flex-col overflow-hidden shadow-float">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-line bg-surface-low">
+            <p className="font-semibold text-primary text-sm">Trading agent</p>
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                className={`p-2 rounded-full hover:bg-white ${voiceOn ? "text-grove-700" : "text-grove-400"}`}
+                className={`p-2 rounded-full hover:bg-white ${voiceOn ? "text-ink" : "text-ink-faint"}`}
                 onClick={toggleSpeaker}
                 aria-label={voiceOn ? "Mute agent voice" : "Unmute agent voice"}
                 title={voiceOn ? "Speaker on — tap to mute" : "Silent — tap to let the agent speak"}
@@ -312,17 +341,21 @@ export default function AgentChat() {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-3 space-y-2 text-sm">
+            <div className="rounded-2xl px-3 py-2 bg-white border border-line text-primary mr-0 whitespace-pre-wrap text-xs leading-relaxed">
+              <p className="font-semibold text-primary mb-1">Required prompt formats</p>
+              {PROMPT_FORMATS}
+            </div>
             {messages.map((m, i) => (
-              <div key={i} className={`rounded-2xl px-3 py-2 ${m.role === "user" ? "bg-grove-600 text-white ml-8" : "bg-grove-50 text-grove-800 mr-6"}`}>
+              <div key={i} className={`rounded-2xl px-3 py-2 whitespace-pre-wrap ${m.role === "user" ? "bg-primary text-white ml-8" : "bg-surface-low text-primary mr-6"}`}>
                 {m.content}
               </div>
             ))}
             <div ref={bottom} />
           </div>
-          {hint && <p className="px-3 pb-1 text-xs text-grove-700">{hint}</p>}
+          {hint && <p className="px-3 pb-1 text-xs text-ink">{hint}</p>}
           {error && <p className="px-3 pb-1 text-xs text-red-700">{error}</p>}
           <form
-            className="p-2 border-t border-grove-100 flex gap-1"
+            className="p-2 border-t border-line flex gap-1"
             onSubmit={(e) => {
               e.preventDefault();
               send();
@@ -330,7 +363,7 @@ export default function AgentChat() {
           >
             <button
               type="button"
-              className={`btn-ghost px-3 ${listening ? "bg-grove-600 text-white border-grove-600" : ""}`}
+              className={`btn-ghost px-3 ${listening ? "bg-primary text-white border-primary" : ""}`}
               onClick={toggleMic}
               disabled={busy}
               aria-label={listening ? "Stop and convert speech" : "Start voice"}
@@ -341,7 +374,7 @@ export default function AgentChat() {
             <input
               className="input"
               value={input}
-              placeholder={listening ? "Speak now…" : busy ? "Working…" : "Ask the agent…"}
+              placeholder={listening ? "Speak now…" : busy ? "Working…" : "e.g. add 2 kg of dates to cart"}
               onChange={(e) => setInput(e.target.value)}
               disabled={busy}
             />

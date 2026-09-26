@@ -1,4 +1,4 @@
-# Rising Crescent
+# Shining Crescent
 
 Fruit and dry-fruit **trading house**: retail + wholesale cart, lot inventory (FEFO), procurement, QC, fulfillment, invoices, RBAC, notifications, and audit.
 
@@ -17,7 +17,7 @@ PostgreSQL on `localhost:5432` is required. Either:
 docker compose up -d postgres
 ```
 
-or use a local server (create database `risingcrescent`, user `rc` / `rc_secret`).
+or use a local server (create database `shiningcrescent`, user `rc` / `rc_secret`).
 
 Then:
 

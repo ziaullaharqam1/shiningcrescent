@@ -31,12 +31,12 @@ export default function PrintPreviewDialog() {
   }
 
   return (
-    <div className="fixed inset-0 z-[80] bg-grove-900/50 flex items-end sm:items-center justify-center p-0 sm:p-6" role="dialog" aria-modal="true" aria-label="Print preview">
+    <div className="fixed inset-0 z-[80] bg-primary/50 flex items-end sm:items-center justify-center p-0 sm:p-6" role="dialog" aria-modal="true" aria-label="Print preview">
       <div className="bg-white w-full sm:max-w-4xl sm:rounded-2xl shadow-xl flex flex-col max-h-[100dvh] sm:max-h-[92vh] overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-grove-100 bg-grove-50">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-line bg-surface-low">
           <div>
-            <p className="font-semibold text-grove-800">{preview.title}</p>
-            <p className="text-xs text-grove-600">Print preview — paper or Save as PDF in the print dialog</p>
+            <p className="font-semibold text-primary">{preview.title}</p>
+            <p className="text-xs text-ink-muted">Print preview — paper or Save as PDF in the print dialog</p>
           </div>
           <div className="flex gap-2">
             <button type="button" className="btn-primary text-sm" onClick={printNow}>Print / Save as PDF</button>

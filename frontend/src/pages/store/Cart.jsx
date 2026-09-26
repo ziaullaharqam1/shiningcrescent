@@ -45,20 +45,20 @@ export default function Cart() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="font-display text-4xl">Your crate</h1>
-      <p className="text-sm text-grove-600 mt-1">Priced as {cart.channel}</p>
+    <div className="max-w-4xl mx-auto px-4 lg:px-10 py-12">
+      <h1 className="page-title">Your crate</h1>
+      <p className="page-hint">Priced as {cart.channel}</p>
       {error && <div className="mt-4"><ErrorBanner>{error}</ErrorBanner></div>}
       {cart.items.length === 0 ? (
-        <p className="mt-8">Empty. <Link className="underline" to="/">Browse the market</Link></p>
+        <p className="mt-8 text-ink-muted">Empty. <Link className="underline text-primary" to="/">Browse the market floor</Link></p>
       ) : (
         <div className="mt-6 space-y-3">
           {cart.items.map((i) => (
-            <div key={i.productId} className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-wrap items-center gap-4">
+            <div key={i.productId} className="bg-white border border-line rounded-2xl p-4 flex flex-wrap items-center gap-4">
               <ProducePhoto hint={i.imageHint} imageUrl={i.imageUrl} name={i.name} sku={i.sku} className="h-16 w-16 rounded-xl" />
               <div className="flex-1">
-                <p className="font-semibold">{i.name}</p>
-                <p className="text-sm text-grove-600">{i.sku} · {money(i.unitPrice)} / {i.uom}</p>
+                <p className="font-semibold text-primary">{i.name}</p>
+                <p className="text-sm text-ink-muted">{i.sku} · {money(i.unitPrice)} / {i.uom}</p>
               </div>
               <input
                 className="input w-24"
@@ -75,9 +75,9 @@ export default function Cart() {
             <div className="flex justify-between"><span>Subtotal</span><b>{money(cart.subtotal)}</b></div>
             <div className="flex justify-between"><span>VAT 5%</span><b>{money(cart.tax)}</b></div>
             <div className="flex justify-between text-lg"><span>Total</span><b>{money(cart.total)}</b></div>
-            <p className="text-xs text-grove-600 pt-1">Next: pay by card or cash on delivery. A Noon rider is picked from who is available.</p>
+            <p className="text-xs text-ink-muted pt-1">Next: pay by card or cash on delivery. A Noon rider is picked from who is available.</p>
           </div>
-          <Link className="btn-primary w-full sm:w-auto" to="/checkout">Pay</Link>
+          <Link className="btn-primary w-full sm:w-auto" to="/checkout">Continue to pay</Link>
         </div>
       )}
     </div>

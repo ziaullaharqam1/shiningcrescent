@@ -1,0 +1,22 @@
+[Unit]
+Description=Shining Crescent web (Nginx HTTPS)
+Requires=docker.service shiningcrescent-api.service
+After=docker.service shiningcrescent-api.service
+PartOf=shiningcrescent.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+TimeoutStartSec=120
+TimeoutStopSec=20
+WorkingDirectory=/home/ec2-user/shiningcrescent
+EnvironmentFile=-/home/ec2-user/shiningcrescent/.env
+ExecStart=/usr/bin/docker compose up --no-color --no-log-prefix --no-deps web
+ExecStop=/usr/bin/docker compose stop web
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=shiningcrescent-web
+
+[Install]
+WantedBy=shiningcrescent.target

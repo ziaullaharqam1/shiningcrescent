@@ -14,19 +14,20 @@ export function MyOrders() {
     api.get("/orders").then((r) => setRows(r.data));
   }, []);
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="font-display text-4xl">Orders</h1>
+    <div className="max-w-5xl mx-auto px-4 lg:px-10 py-10">
+      <h1 className="page-title">Orders</h1>
+      <p className="page-hint">Track harvest crates from payment through Noon delivery.</p>
       <div className="table-wrap mt-6">
         <table className="data">
           <thead><tr><th>No</th><th>Status</th><th>Payment</th><th>Total</th><th>When</th></tr></thead>
           <tbody>
             {rows.map((o) => (
               <tr key={o.id}>
-                <td><Link className="underline" to={`/orders/${o.id}`}>{o.orderNo}</Link></td>
+                <td><Link className="text-primary font-semibold underline underline-offset-2" to={`/orders/${o.id}`}>{o.orderNo}</Link></td>
                 <td><StatusPill value={o.status} /></td>
                 <td><StatusPill value={o.paymentStatus} /></td>
-                <td>{money(o.total)}</td>
-                <td className="text-xs">{o.placedAt}</td>
+                <td className="font-semibold">{money(o.total)}</td>
+                <td className="text-xs text-ink-muted">{o.placedAt}</td>
               </tr>
             ))}
           </tbody>
@@ -83,24 +84,24 @@ export function OrderDetail() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
-      <p className="text-xs uppercase tracking-wide">{o.orderNo}</p>
-      <h1 className="font-display text-4xl mt-1">Live delivery</h1>
+    <div className="max-w-3xl mx-auto px-4 lg:px-10 py-10">
+      <p className="label-overline">{o.orderNo}</p>
+      <h1 className="page-title mt-1">Live delivery</h1>
       <div className="mt-3 flex flex-wrap gap-2">
         <StatusPill value={o.status} />
         <StatusPill value={o.paymentStatus} />
         {o.deliveryStatus && <StatusPill value={phase} />}
-        {o.noonAwb && <span className="text-xs rounded-full bg-grove-100 px-3 py-1">Noon AWB {o.noonAwb}</span>}
+        {o.noonAwb && <span className="text-xs rounded-full bg-secondary-container px-3 py-1">Noon AWB {o.noonAwb}</span>}
       </div>
       <p className="mt-4 text-sm">{o.shipToName} · {o.shipToAddress}</p>
       {o.leaveAtDoor && (
-        <p className="mt-2 text-sm font-semibold text-grove-800">Leave at the door — do not knock.</p>
+        <p className="mt-2 text-sm font-semibold text-primary">Leave at the door — do not knock.</p>
       )}
       {o.paymentMethod === "CASH_ON_DELIVERY" && (
-        <p className="mt-1 text-sm text-grove-700">Pay cash to the Noon rider on delivery. Amount {money(o.total)}.</p>
+        <p className="mt-1 text-sm text-ink">Pay cash to the Noon rider on delivery. Amount {money(o.total)}.</p>
       )}
       {o.collectCash && o.noonAwb && (
-        <p className="mt-1 text-sm text-grove-700">Noon will collect cash with AWB {o.noonAwb}.</p>
+        <p className="mt-1 text-sm text-ink">Noon will collect cash with AWB {o.noonAwb}.</p>
       )}
       <button type="button" className="btn-ghost text-sm mt-4" onClick={() => printSalesBill(o, branding)}>Print bill</button>
 
@@ -109,9 +110,9 @@ export function OrderDetail() {
           <DeliveryMap delivery={o} />
           <div className="card p-4 flex flex-wrap gap-4 items-start">
             <div className="flex-1 min-w-[180px]">
-              <p className="text-xs uppercase tracking-wide text-grove-600">Noon rider</p>
+              <p className="text-xs uppercase tracking-wide text-ink-muted">Noon rider</p>
               <p className="font-display text-2xl mt-1">{rider.name}</p>
-              <p className="text-sm text-grove-600">{vehicleLabel} · {rider.vehicle} · {rider.phone}</p>
+              <p className="text-sm text-ink-muted">{vehicleLabel} · {rider.vehicle} · {rider.phone}</p>
               <p className="text-sm mt-2 flex items-center gap-1">
                 <Star size={14} className="text-[#4682B4] fill-[#4682B4]" />
                 {rider.rating} · {rider.jobsCompleted} deliveries
@@ -122,7 +123,7 @@ export function OrderDetail() {
             </div>
             <div className="text-right">
               <p className="text-xs uppercase tracking-wide text-[#2E5A7A]">Distance · ETA</p>
-              <p className="font-display text-3xl text-grove-800">{dist}</p>
+              <p className="font-display text-3xl text-primary">{dist}</p>
               <p className="text-sm text-[#2E5A7A]">{etaText} · {phase}</p>
             </div>
           </div>
@@ -160,7 +161,7 @@ export function OrderDetail() {
         </div>
       )}
 
-      {msg && <p className="text-sm text-grove-700 mt-3">{msg}</p>}
+      {msg && <p className="text-sm text-ink mt-3">{msg}</p>}
 
       <div className="card p-4 mt-6 space-y-2">
         {(o.lines || []).map((l) => (
